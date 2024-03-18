@@ -4,9 +4,10 @@ import (
   context "context"
   "fmt"
 
-  sdk "github.com/cosmos/cosmos-sdk/types"
+  // sdk "github.com/cosmos/cosmos-sdk/types"
 
   slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+  stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
   "google.golang.org/grpc"
 )
@@ -20,8 +21,9 @@ func main() {
   defer conn.Close()
 
   slashingClient := slashingtypes.NewQueryClient(conn)
+  stakingClient := stakingtypes.NewQueryClient(conn)
 
-  a41ConsAddr, err := sdk.ConsAddressFromBech32("cosmosvalcons1v78emy9d2xe3tj974l7tmn2whca2nh9z4drnsy")
+  // a41ConsAddr, err := sdk.ConsAddressFromBech32("cosmosvalcons1v78emy9d2xe3tj974l7tmn2whca2nh9z4drnsy")
   if err != nil {
     fmt.Printf("invalid address: %v", err)
   }
@@ -32,17 +34,24 @@ func main() {
   }
   fmt.Printf("Slashing Param: %v\n", slashingParamsRes.Params.SignedBlocksWindow)
 
-  slashingInfosRes, err := slashingClient.SigningInfos(context.Background(), &slashingtypes.QuerySigningInfosRequest{})
+  // slashingInfosRes, err := slashingClient.SigningInfos(context.Background(), &slashingtypes.QuerySigningInfosRequest{})
+  // if err != nil {
+  //   fmt.Printf("Error: %v\n", err)
+  // }
+  // fmt.Printf("Slashing Infos: %v\n", slashingInfosRes.Info)
+
+  // validatorDelegationsRes, err := stakingClient.ValidatorDelegations(context.Background(), &stakingtypes.QueryValidatorDelegationsRequest{
+  //   ValidatorAddr: "cosmosvaloper1v78emy9d2xe3tj974l7tmn2whca2nh9zp7s0u9",
+  // })
+  // if err != nil {
+  //   fmt.Printf("Error: %v\n", err)
+  // }
+  // fmt.Printf("Validator Delegations : %v\n", validatorDelegationsRes)
+  validatorRes, err := stakingClient.Validator(context.Background(), &stakingtypes.QueryValidatorRequest{
+    ValidatorAddr: "cosmosvaloper1v78emy9d2xe3tj974l7tmn2whca2nh9zp7s0u9",
+  })
   if err != nil {
     fmt.Printf("Error: %v\n", err)
   }
-  fmt.Printf("Slashing Infos: %v\n", slashingInfosRes.Info)
-  slashingInfoRes, err := slashingClient.SigningInfo(context.Background(), &slashingtypes.QuerySigningInfoRequest{
-    ConsAddress: a41ConsAddr.String(),
-  })
-  fmt.Printf("Slashing Info: %v\n", slashingInfoRes.GetValSigningInfo())
-  if err != nil {
-    fmt.Printf("Error: %v", err)
-  }
-
+  fmt.Printf("Validator : %v\n", validatorRes.Validator.DelegatorShares)
 }
