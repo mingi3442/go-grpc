@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  // sdk "github.com/cosmos/cosmos-sdk/types"
 
   grpcClient "github.com/mingi3442/go-grpc/client/grpc"
 )
