@@ -1,4 +1,4 @@
-module go-grpc
+module github.com/mingi3442/go-grpc
 
 go 1.21.5
 

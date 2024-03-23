@@ -5,8 +5,10 @@ import (
   "time"
 )
 
+// LogLevel type
 type LogLevel int
 
+// Log levels
 const (
   DEBUG LogLevel = iota
   INFO
@@ -14,28 +16,64 @@ const (
   ERROR
 )
 
+// // String returns the string representation of a LogLevel(0 => "DEBUG" etc.)
+func (l LogLevel) String() string {
+  switch l {
+  case DEBUG:
+    return "\033[34mDEBUG\033[0m" // 파란색
+  case INFO:
+    return "\033[32mINFO\033[0m" // 녹색
+  case WARN:
+    return "\033[33mWARN\033[0m" // 노란색
+  case ERROR:
+    return "\033[31mERROR\033[0m" // 빨간색
+  default:
+    return "\033[37mUNKNOWN\033[0m" // 흰색
+  }
+}
+func (l LogLevel) Color() string {
+  switch l {
+  case DEBUG:
+    return "\033[34m" // 파란색
+  case INFO:
+    return "\033[32m" // 녹색
+  case WARN:
+    return "\033[33m" // 노란색
+  case ERROR:
+    return "\033[31m" // 빨간색
+  default:
+    return "\033[37m" // 흰색
+  }
+}
+
+// LogMessage struct
 type LogMessage struct {
   Level   LogLevel
   Message string
 }
 
+// logChan is a channel for log messages
 var logChan chan LogMessage
 
+// package가 읽혀질 때 최초 시작
 func init() {
-  logChan = make(chan LogMessage, 100)
-  go logWorker(logChan)
+  logChan = make(chan LogMessage)
+  go logPrint(logChan)
 }
 
-func logWorker(logChan <-chan LogMessage) {
+func logPrint(logChan <-chan LogMessage) {
   for logMsg := range logChan {
-    // 로그 메시지 처리 로직
-    fmt.Printf("[%s] %s: %s\n", logMsg.Level, time.Now().Format(time.RFC3339), logMsg.Message)
+    colorCode := logMsg.Level.Color()
+    // 로그 레벨과 메시지 전체에 색상을 적용하고, 메시지 출력 후 색상을 리셋합니다.
+    fmt.Printf("%s[%s] %s: %s%s\n", colorCode, logMsg.Level.String(), time.Now().Format(time.RFC3339), logMsg.Message, "\033[0m")
   }
 }
 
 func Log(level LogLevel, msg string) {
   logChan <- LogMessage{Level: level, Message: msg}
 }
+
+//-------------------------------------------------------------
 
 // var eventQueue chan func()
 
