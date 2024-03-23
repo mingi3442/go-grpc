@@ -53,5 +53,5 @@ func main() {
   if err != nil {
     fmt.Printf("Error: %v\n", err)
   }
-  fmt.Printf("Validator : %v\n", validatorRes.Validator.DelegatorShares)
+  fmt.Printf("Validator : %v\n", validatorRes.Validator)
 }
